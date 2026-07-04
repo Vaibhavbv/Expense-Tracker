@@ -5,10 +5,12 @@ salary and recurring expenses once, then log day-to-day spends — and the app
 surfaces **behavioural insights**: where money leaks, how patterns shift, and
 early warnings *before* a budget is blown. Amounts are in **INR (₹)**.
 
-> Currently a **foundation build**: auth, onboarding, and the dashboard are fully
-> implemented, along with the complete database schema and the insight engine.
-> Expenses / Analytics / Budgets pages are scaffolded as placeholders (their data
-> layer and pure logic already exist) and are next up.
+All seven routes are implemented: **Login**, **Onboarding**, **Dashboard**,
+**Expenses** (filter/search/edit/delete + pagination), **Analytics** (trends,
+weekday pattern, anomalies, steady-leak ranking, forecast), **Budgets**
+(colour-coded per-category caps), and **Settings** (edit profile, manage
+categories & recurring expenses, CSV export). Insight logic lives in pure,
+unit-tested utilities.
 
 ## Tech stack
 
@@ -142,7 +144,7 @@ src/
   context/         Auth + theme providers
   hooks/           TanStack Query hooks (profile, categories, expenses, recurring)
   lib/             supabase client, formatting, insight utils (+ tests)
-  pages/           Login, Onboarding, Dashboard, Settings, + placeholders
+  pages/           Login, Onboarding, Dashboard, Expenses, Analytics, Budgets, Settings
   types/           DB-facing TypeScript types
 supabase/
   migrations/      Ordered SQL: schema, RLS, signup seed, summaries view
