@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme tokens — consumed by tailwind.config.js as rgb(var(--token) / alpha) */
+@layer base {
+  :root {
+    --color-surface: 248 250 252; /* slate-50  */
+    --color-card: 255 255 255;
+    --color-border: 226 232 240; /* slate-200 */
+    --color-content: 15 23 42; /* slate-900 */
+    --color-muted: 100 116 139; /* slate-500 */
+  }
+
+  .dark {
+    --color-surface: 9 12 20; /* near-black navy */
+    --color-card: 20 27 41; /* elevated card   */
+    --color-border: 32 42 61;
+    --color-content: 241 245 249; /* slate-100 */
+    --color-muted: 148 163 184; /* slate-400 */
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-surface text-content font-sans antialiased;
+  }
+
+  /* Nicer numeric alignment for money figures */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Thin, theme-aware scrollbars */
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+}
