@@ -7,7 +7,10 @@ import {
   type ReactNode,
 } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
+import { isSupabaseConfigured, supabase } from '@/lib/supabase'
+
+const NOT_CONFIGURED =
+  'Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.'
 
 interface AuthContextValue {
   session: Session | null
@@ -29,6 +32,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Without a configured backend, skip auth entirely and render the app
+    // (Login shows a "not configured" banner) instead of hanging on a spinner.
+    if (!isSupabaseConfigured) {
+      setLoading(false)
+      return
+    }
+
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session)
       setLoading(false)
@@ -49,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user: session?.user ?? null,
       loading,
       async signIn(email, password) {
+        if (!isSupabaseConfigured) return { error: NOT_CONFIGURED }
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
@@ -56,6 +67,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: error?.message ?? null }
       },
       async signUp(email, password, fullName) {
+        if (!isSupabaseConfigured)
+          return { error: NOT_CONFIGURED, needsConfirmation: false }
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
