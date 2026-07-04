@@ -1,5 +1,7 @@
 import {
   Area,
+  Bar,
+  BarChart,
   CartesianGrid,
   Cell,
   ComposedChart,
@@ -132,3 +134,143 @@ const tooltipStyle = {
   color: 'rgb(var(--color-content))',
   fontSize: 12,
 } as const
+
+const cursorFill = { fill: 'rgba(148,163,184,0.08)' }
+
+// ---------------------------------------------------------------------------
+// Grouped bars (e.g. income vs expense vs savings per month)
+// ---------------------------------------------------------------------------
+export interface BarSeries {
+  key: string
+  name: string
+  color: string
+}
+
+export function GroupedBars({
+  data,
+  series,
+}: {
+  data: object[]
+  series: BarSeries[]
+}) {
+  return (
+    <ResponsiveContainer width="100%" height={280}>
+      <BarChart data={data} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
+        <CartesianGrid stroke={GRID} vertical={false} />
+        <XAxis
+          dataKey="month"
+          tick={{ fill: AXIS, fontSize: 11 }}
+          tickLine={false}
+          axisLine={false}
+        />
+        <YAxis
+          tick={{ fill: AXIS, fontSize: 11 }}
+          tickLine={false}
+          axisLine={false}
+          tickFormatter={(v) => formatCompactINR(v)}
+          width={52}
+        />
+        <Tooltip
+          formatter={(value, name) => [formatINR(Number(value)), name]}
+          contentStyle={tooltipStyle}
+          cursor={cursorFill}
+        />
+        <Legend iconType="circle" wrapperStyle={{ fontSize: 12, color: AXIS }} />
+        {series.map((s) => (
+          <Bar
+            key={s.key}
+            dataKey={s.key}
+            name={s.name}
+            fill={s.color}
+            radius={[4, 4, 0, 0]}
+          />
+        ))}
+      </BarChart>
+    </ResponsiveContainer>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Stacked bars (category trend over time)
+// ---------------------------------------------------------------------------
+export function StackedBars({
+  data,
+  series,
+  colors,
+}: {
+  data: object[]
+  series: string[]
+  colors: Record<string, string>
+}) {
+  return (
+    <ResponsiveContainer width="100%" height={280}>
+      <BarChart data={data} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
+        <CartesianGrid stroke={GRID} vertical={false} />
+        <XAxis
+          dataKey="month"
+          tick={{ fill: AXIS, fontSize: 11 }}
+          tickLine={false}
+          axisLine={false}
+        />
+        <YAxis
+          tick={{ fill: AXIS, fontSize: 11 }}
+          tickLine={false}
+          axisLine={false}
+          tickFormatter={(v) => formatCompactINR(v)}
+          width={52}
+        />
+        <Tooltip
+          formatter={(value, name) => [formatINR(Number(value)), name]}
+          contentStyle={tooltipStyle}
+          cursor={cursorFill}
+        />
+        <Legend iconType="circle" wrapperStyle={{ fontSize: 12, color: AXIS }} />
+        {series.map((s) => (
+          <Bar key={s} dataKey={s} name={s} stackId="a" fill={colors[s]} />
+        ))}
+      </BarChart>
+    </ResponsiveContainer>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Simple single-series bars (e.g. weekday pattern)
+// ---------------------------------------------------------------------------
+export function SimpleBars({
+  data,
+  xKey,
+  dataKey,
+  color = '#4f46e5',
+}: {
+  data: object[]
+  xKey: string
+  dataKey: string
+  color?: string
+}) {
+  return (
+    <ResponsiveContainer width="100%" height={240}>
+      <BarChart data={data} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
+        <CartesianGrid stroke={GRID} vertical={false} />
+        <XAxis
+          dataKey={xKey}
+          tick={{ fill: AXIS, fontSize: 11 }}
+          tickLine={false}
+          axisLine={false}
+        />
+        <YAxis
+          tick={{ fill: AXIS, fontSize: 11 }}
+          tickLine={false}
+          axisLine={false}
+          tickFormatter={(v) => formatCompactINR(v)}
+          width={52}
+        />
+        <Tooltip
+          formatter={(value) => [formatINR(Number(value)), 'Avg spend']}
+          contentStyle={tooltipStyle}
+          cursor={cursorFill}
+        />
+        <Bar dataKey={dataKey} fill={color} radius={[4, 4, 0, 0]} />
+      </BarChart>
+    </ResponsiveContainer>
+  )
+}
