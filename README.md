@@ -102,9 +102,25 @@ expenses) → then the dashboard.
 
 1. Push this repo to GitHub and import it into Vercel.
 2. Framework preset: **Vite** (auto-detected; `vercel.json` handles SPA rewrites).
-3. Add the two `VITE_SUPABASE_*` environment variables in the Vercel project
-   settings.
+3. Add the `VITE_SUPABASE_*` environment variables in the Vercel project
+   settings. Optionally add `VITE_SITE_URL` set to your production domain.
 4. Deploy. Build command `npm run build`, output `dist`.
+
+### Fixing "confirmation email links go to localhost"
+
+Auth email links (confirm signup, password reset) are built from your Supabase
+project's **Site URL**, which defaults to `http://localhost:3000`. If a real
+user signs up and the link drops them on localhost, update the dashboard:
+
+**Authentication → URL Configuration**
+
+- **Site URL:** your production domain, e.g. `https://your-app.vercel.app`
+- **Redirect URLs:** add both your production domain and, for local dev,
+  `http://localhost:5173` (Supabase only redirects to allow-listed URLs).
+
+The app also passes `emailRedirectTo` (the current origin, or `VITE_SITE_URL`
+if set) on signup, but that URL must be in the Redirect URLs allow-list above
+for Supabase to honour it — otherwise it falls back to the Site URL.
 
 ## Architecture notes
 

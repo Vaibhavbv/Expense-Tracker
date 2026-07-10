@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
-import { isSupabaseConfigured, supabase } from '@/lib/supabase'
+import { isSupabaseConfigured, siteUrl, supabase } from '@/lib/supabase'
 
 const NOT_CONFIGURED =
   'Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.'
@@ -72,7 +72,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { data: { full_name: fullName } },
+          options: {
+            data: { full_name: fullName },
+            // Send the confirmation link back to this app's real origin rather
+            // than the Supabase project's default Site URL (which is localhost
+            // until changed in the dashboard).
+            emailRedirectTo: siteUrl || undefined,
+          },
         })
         return {
           error: error?.message ?? null,
